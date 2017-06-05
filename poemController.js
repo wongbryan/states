@@ -53,4 +53,4 @@ function doSetTimeout(time, mode) {
 }
 
 var controller = new Controller();
-// controller.start();
+controller.start();

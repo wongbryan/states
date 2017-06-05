@@ -78,6 +78,14 @@ function spawnDiamondRing(e){
 	World.objects.push(temp);
 }
 
+function handleWindowResize(){
+	HEIGHT = window.innerHeight;
+	WIDTH = window.innerWidth;
+
+	World.renderer.setSize(WIDTH,HEIGHT);
+	World.camera.aspect = WIDTH/HEIGHT;
+    World.camera.updateProjectionMatrix();
+}
 
 var spawnWater = function(e){
 	var x, y, z;
@@ -428,6 +436,7 @@ class WORLD{
 	      _this.scene.add(mesh);
 	      _this.objects.push(TITLE);
 
+	      document.body.removeChild(document.getElementById('loading'));
 	    });
 
 	    titleGlobe = new TitleGlobe(25, 0, 0, 980);
@@ -490,10 +499,10 @@ class WORLD{
 	    icons.push(salt.mesh);
 	    this.titleIconObjects["salt"] = salt;
 
-	    BUTTON = new Button(.25, -5.5, 2.25, 993.5);
-		this.scene.add(BUTTON.mesh);
-		this.titleIconObjects["button"] = BUTTON;
-		icons.push(BUTTON.mesh);
+	 //    BUTTON = new Button(.25, -5.5, 2.25, 993.5);
+		// this.scene.add(BUTTON.mesh);
+		// this.titleIconObjects["button"] = BUTTON;
+		// icons.push(BUTTON.mesh);
 
 	    this.titleIcons = icons;
 
@@ -833,6 +842,8 @@ function selectScene(e){ //select scene from title using raycasting
 }
 
 // window.addEventListener('mousemove', handleMouseMove);
+
+window.addEventListener('resize', handleWindowResize);
 
 var audio = document.getElementsByTagName('audio')[0];
 audio.volume = .75;
