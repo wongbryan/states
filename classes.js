@@ -2141,7 +2141,7 @@ class Button extends Item{
 		var geom, mat, mesh;
 		geom = new THREE.BoxGeometry(radius, radius, radius);
 
-		var sampleTexture = new THREE.TextureLoader().load('assets/images/microscopy2.jpg');
+		var sampleTexture = new THREE.TextureLoader().load('assets/images/diamonds.jpg');
 		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
 		var noiseTexture = new THREE.TextureLoader().load('assets/images/cloud.png');
