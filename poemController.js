@@ -4,11 +4,11 @@ var timestamps = {
 	28030: "metal",
 	39240: "diamond",
 	53820: "iron",
-	59030: "metal",
-	74660: "ice",
-	106270: "mdma",
-	112520: "water",
-	124840: "title"
+	59030: "diamond",
+	74660: "carbon",
+	96840: "mdma",
+	103190: "water",
+	115500: "title"
 };
 
 class Controller{
@@ -21,6 +21,7 @@ class Controller{
 		this.audio.src = 'assets/sounds/legion.mp3';
 		this.audio.loop = false;
 		this.audio.autoplay = false;
+		this.audio.volume = 1;
 
 		this.audio.play();
 		var start = new Date().getTime();
@@ -28,6 +29,18 @@ class Controller{
 			doSetTimeout(time, timestamps[time]);
 			console.log("set timeout for "+timestamps[time]+" at "+time.toString());
 		}
+	}
+
+	mute() {
+		// this.audio.pause();
+		this.audio.volume = 0;
+		document.getElementById("controls__sound").classList.remove('unmuted');
+	}
+
+	unmute() {
+		// this.audio.play();
+		this.audio.volume = 1;
+		document.getElementById("controls__sound").classList.add('unmuted');
 	}
 
 }
@@ -41,6 +54,7 @@ function doSetTimeout(time, mode) {
 				audio.loop = true;
 				audio.autoplay = true;
 				audio.volume = .5;
+				started = false;
 			}, 1000);
 			return;
 		}
@@ -53,4 +67,25 @@ function doSetTimeout(time, mode) {
 }
 
 var controller = new Controller();
-controller.start();
+var muted = 0;
+var started = false;
+
+console.log(document.getElementById("controls__sound"));
+document.getElementById("controls__sound").onclick = function(){
+	if(!muted) {
+		controller.mute();
+		muted = 1;
+	} else {
+		controller.unmute();
+		muted = 0;
+	}
+};
+
+document.getElementById("controls__play").onclick = function(){
+	if(!started) {
+		started = true;
+		controller.start();
+		document.getElementById("controls__play").classList.add('playing');
+	}
+};
+// controller.play();

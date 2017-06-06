@@ -15,14 +15,27 @@ var birthRadius = domeRadius/10;
 var TITLE;
 var homeButton;
 var titleGlobe;
-var globalWaterSphere;
+var diamondPlane = new MetalPlane(0, 0, 1000); //create diamond, water, salt and carbon on startup so it doesn't lag later on
+var globalWaterSphere = new GlobalWaterSphere(50, 0, 0, 950);
 var birthRadiusWater = 20;
 var lattice;
 var MDMAMol;
-var salt;
+
+var MDMAGlobe = new MDMABackground(0, 0, 980);
+
+var n = 4;
+var move = (n-1)*16*(4+4*2)/3;
+var saltLattice = new Salt(n, 0, 0, 900);
+var y = 1.3*move;
+var x = -1.1*move;
+var z = 900;
+saltLattice.mesh.position.set(x, y, z);
+
 var iconsPresent = false;
 var iceDome;
 var BUTTON;
+var carbonTube = new CarbonTube();
+var carbonGlobe;
 
 //auxillary functions
 
@@ -78,14 +91,6 @@ function spawnDiamondRing(e){
 	World.objects.push(temp);
 }
 
-function handleWindowResize(){
-	HEIGHT = window.innerHeight;
-	WIDTH = window.innerWidth;
-
-	World.renderer.setSize(WIDTH,HEIGHT);
-	World.camera.aspect = WIDTH/HEIGHT;
-    World.camera.updateProjectionMatrix();
-}
 
 var spawnWater = function(e){
 	var x, y, z;
@@ -119,6 +124,15 @@ function distortWaterBackground(){
 
 function distortTitleBackground(){
 	titleGlobe.distort();
+}
+
+function handleWindowResize(){
+	HEIGHT = window.innerHeight;
+	WIDTH = window.innerWidth;
+
+	World.renderer.setSize(WIDTH,HEIGHT);
+	World.camera.aspect = WIDTH/HEIGHT;
+    World.camera.updateProjectionMatrix();
 }
 
 var requestId;
@@ -202,7 +216,6 @@ class WORLD{
 		this.clearScene();
 		this.removeEventListeners();
 		if (scene == 'ice'){
-			console.log('selected ice');
 			this.populateIce();
 			loop = function(){
 				World.updateIce();
@@ -212,7 +225,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'water'){
-			console.log('selected water');
 			this.populateWater();
 			loop = function(){
 				World.updateWater();
@@ -222,7 +234,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'iron'){
-			console.log('selected iron');
 			this.populateIron();
 			loop = function(){
 				World.updateIron();
@@ -232,7 +243,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'metal'){
-			console.log('selected metal');
 			this.populateMetal();
 			loop = function(){
 				World.updateMetal();
@@ -242,7 +252,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'mdma'){
-			console.log('selected mdma');
 			this.populateMDMA();
 			loop = function(){
 				World.updateMDMA();
@@ -252,7 +261,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'salt'){
-			console.log('selected salt');
 			this.populateSalt();
 			loop = function(){
 				World.updateSalt();
@@ -262,7 +270,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'diamond'){
-			console.log('selected diamond');
 			this.populateDiamond();
 			loop = function(){
 				World.updateDiamond();
@@ -271,8 +278,16 @@ class WORLD{
 				window.requestAnimationFrame(loop);
 			}
 		}
+		else if (scene == 'carbon'){
+			this.populateCarbon();
+			loop = function(){
+				World.updateCarbon();
+				World.collectTrash();
+				World.renderer.render(World.scene, World.camera);
+				window.requestAnimationFrame(loop);
+			}
+		}
 		else if (scene == 'title'){
-			console.log('selected title');
 			this.populateTitle();
 			loop = function(){
 				World.updateTitle();
@@ -283,42 +298,67 @@ class WORLD{
 		}
 	}
 
+	populateCarbon(){
+		this.scene.add(carbonTube.mesh);
+		this.objects.push(carbonTube);
+
+		// carbonGlobe = new CarbonGlobe(2000, 0, 0, 1000);
+		// this.scene.add(carbonGlobe.mesh);
+		// this.objects.push(carbonGlobe);
+
+		// window.addEventListener('mousemove', function (event) {
+		// 	mouseX = event.clientX - windowHalfX;
+		// 	mouseY = event.clientY - windowHalfY;
+
+		// }, false);
+
+		// window.addEventListener('touchstart', function (event) {
+
+		// 	if (event.touches.length === 1) {
+		// 		event.preventDefault();
+		// 		mouseX = event.touches[0].pageX - windowHalfX;
+		// 		mouseY = event.touches[0].pageY - windowHalfY;
+		// 	}
+
+		// }, false);
+
+		// window.addEventListener('touchmove', function (event) {
+
+		// 	if (event.touches.length === 1) {
+		// 		event.preventDefault();
+		// 		mouseX = event.touches[0].pageX - windowHalfX;
+		// 		mouseY = event.touches[0].pageY - windowHalfY;
+		// 	}
+
+		// }, false);
+
+	}
+
 	populateDiamond(){	
-		// this.populateHomeButton();
-		var temp = new MetalPlane(0, 0, 1000);
 		// temp.mapToCube(this.cubeCamera);
-		this.scene.add(temp.mesh);
-		this.objects.push(temp);
+		this.scene.add(diamondPlane.mesh);
+		this.objects.push(diamondPlane);
 		window.addEventListener('mousedown', spawnDiamondRing);
 	}
 
 	populateSalt(){
-		// this.populateHomeButton();
-		// this.scene.fog = new THREE.Fog(0x1e1d1b, -50, 800);
-
-		var n = 4;
-		var move = (n-1)*16*(4+4*2)/3;
-		salt = new Salt(n, 0, 0, 900);
-		var y = 1.3*move;
-		var x = -1.1*move;
-		var z = 900;
-		salt.mesh.position.set(x, y, z);
-		this.scene.add(salt.mesh);
-		this.objects.push(salt);
+		this.scene.fog = new THREE.Fog(COLORS.DarkBlue, 50, 300);
+		this.scene.add(saltLattice.mesh);
+		this.objects.push(saltLattice);
 	}
 
 	populateMDMA(){
-		// this.populateHomeButton();
+		
 		MDMAMol = new MDMALattice(4, 0, 0, 950);
 		this.scene.add(MDMAMol.mesh);
 		this.objects.push(MDMAMol);
-		var background = new MDMABackground(0, 0, 980);
-		this.scene.add(background.mesh);
-		this.objects.push(background);
+		
+		this.scene.add(MDMAGlobe.mesh);
+		this.objects.push(MDMAGlobe);
 	}
 
 	populateMetal(){
-		// this.populateHomeButton();
+		
 		var ionSize = 16;
 	    var dis = 15*ionSize/1.3;
 	    ionSize *= 1.5;
@@ -355,8 +395,7 @@ class WORLD{
 	}
 
 	populateIron(){
-		// this.populateHomeButton();
-		// this.scene.fog = new THREE.Fog(0x1e1d1b, 100, 800);
+		this.scene.fog = new THREE.Fog(COLORS.DarkBlue, 100, 700);
 		var n = 4;
 		lattice = new Lattice(n);
 		lattice.mesh.position.set(-window.innerWidth/4, window.innerHeight/2, 950);
@@ -415,7 +454,7 @@ class WORLD{
 	      geometry = new THREE.TextGeometry('STATES', {
 	        font: font,
 	        size: 1,
-	        height: .1,
+	        height: .07,
 	        curveSegments:12,
 	        bevelThickness: 0,
 	        bevelSize: .005,
@@ -435,7 +474,6 @@ class WORLD{
 	      TITLE.mesh.material.color = new THREE.Color(COLORS.Ice);
 	      _this.scene.add(mesh);
 	      _this.objects.push(TITLE);
-
 	      document.body.removeChild(document.getElementById('loading'));
 	    });
 
@@ -452,19 +490,19 @@ class WORLD{
 		var _this = this;
 	    var icons = [];
 
-		var diamond = new Diamond(.1, -3, -2.1, 993.5);
+		var diamond = new Diamond(.1, -3.5, -2.1, 993.5);
 	    this.scene.add(diamond.mesh);
 	    // this.objects.push(diamond);
 	    icons.push(diamond.mesh);
 	    this.titleIconObjects["diamond"] = diamond;
 
-	    var iron = new Iron(.15, -2, -2.1, 993.5);
+	    var iron = new Iron(.15, -2.5, -2.1, 993.5);
 	    this.scene.add(iron.mesh);
 	    // this.objects.push(iron);
 	    icons.push(iron.mesh);
 	 	this.titleIconObjects["iron"] = iron;
 
-	    var ice = new CubicIce(.3, Math.PI*2, -1, -2.1, 993.5);
+	    var ice = new CubicIce(.3, Math.PI*2, -1.5, -2.1, 993.5);
 	    ice.update = function(){
 	    	this.mesh.rotation.z += this.speed*.05;
    			this.mesh.rotation.y += this.speed*.05;
@@ -474,30 +512,35 @@ class WORLD{
 	    icons.push(ice.mesh);
 	    this.titleIconObjects["ice"] = ice;
 
-	    var metalNode = new TitleMetalNode(.17, 0, -2.1, 993.5);
+	    var metalNode = new TitleMetalNode(.17, -.5, -2.1, 993.5);
 	    this.scene.add(metalNode.mesh);
 	    // this.objects.push(metalNode);
 	    metalNode.mapToCube(this.cubeCamera);
 	    icons.push(metalNode.mesh);
 	    this.titleIconObjects["metal"] = metalNode;
 
-	    var water = new Water(.3, Math.random()*2*Math.PI, 0, 1, -2.1, 993.5);
+	    var water = new Water(.3, Math.random()*2*Math.PI, 0, .5, -2.1, 993.5);
 	    this.scene.add(water.mesh);
 	    // this.objects.push(water);
 	    icons.push(water.mesh);
 	    this.titleIconObjects["water"] = water;
 
-	    var smiley = new Smiley(.15, 2, -2.1, 993.5);
+	    var smiley = new Smiley(.15, 1.5, -2.1, 993.5);
 	    this.scene.add(smiley.mesh);
 	    // this.objects.push(smiley);
 	    icons.push(smiley.mesh);
 	    this.titleIconObjects["mdma"] = smiley;
 
-	    var salt = new SaltCube(.2, 3, -2.1, 993.5);
+	    var salt = new SaltCube(.2, 2.5, -2.1, 993.5);
 	    this.scene.add(salt.mesh);
 	    // this.objects.push(salt);
 	    icons.push(salt.mesh);
 	    this.titleIconObjects["salt"] = salt;
+
+	    var carbon = new Carbon(.15, 3.5, -2.1, 993.5);
+	    this.scene.add(carbon.mesh);
+	    icons.push(carbon.mesh);
+	    this.titleIconObjects["carbon"] = carbon;
 
 	 //    BUTTON = new Button(.25, -5.5, 2.25, 993.5);
 		// this.scene.add(BUTTON.mesh);
@@ -512,9 +555,7 @@ class WORLD{
 	}
 
 	populateWater(){
-		// this.populateHomeButton();
-		globalWaterSphere = new GlobalWaterSphere(50, 0, 0, 950);
-	    globalWaterSphere.mapToCube(this.cubeCamera);
+
 	    this.scene.add(globalWaterSphere.mesh);
 	    this.objects.push(globalWaterSphere);
 
@@ -529,7 +570,7 @@ class WORLD{
 	}
 
 	populateIce(){
-		// this.populateHomeButton();
+		
 		iceDome = new IceDome(domeRadius, 500, 0, 0, 1000);
 		iceDome.mapToCube(this.iceCubeCamera);
 		this.objects.push(iceDome);
@@ -547,6 +588,18 @@ class WORLD{
 	addMolecule(molecule){
 		this.objects.push(molecule);
 		this.scene.add(molecule.mesh);
+	}
+
+	updateCarbon(){
+		for (var i=0; i<this.objects.length; i++){
+			this.objects[i].update();
+		}
+
+		for (var key in this.titleIconObjects){
+			this.titleIconObjects[key].update();
+		}
+		World.camera.position.x += (mouseX - World.camera.position.x) * 0.1;
+		World.camera.position.y += (- mouseY - World.camera.position.y) * 0.1;
 	}
 
 	updateDiamond(){
@@ -569,6 +622,8 @@ class WORLD{
 	}
 
 	update(){
+		World.camera.position.x = 0;
+		World.camera.position.y = 0;
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
@@ -703,7 +758,7 @@ class WORLD{
 		for (var k=0; k<this.electrons.length; k++){
 			this.scene.remove(this.electrons[k]);
 		}
-		this.scene.remove(this.scene.fog);
+		this.scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
 		this.objects = []; //clear objects array
 		this.electrons = [];
 		this.layers = [];
@@ -767,7 +822,8 @@ function selectScene(e){ //select scene from title using raycasting
 	var water = World.titleIcons[4];
 	var mdma = World.titleIcons[5];
 	var salt = World.titleIcons[6];
-	var button = World.titleIcons[7];
+	var carbon = World.titleIcons[7];
+	// var button = World.titleIcons[8];
 
 	mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
 	mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
@@ -778,11 +834,11 @@ function selectScene(e){ //select scene from title using raycasting
 	for (var i=0; i<intersects.length; i++){
 		for (var k=0; k<World.titleIcons.length; k++){
 			if (intersects[i].object == World.titleIcons[k]){
-				if (intersects[i].object == button){
-					BUTTON.spinWildly();
-					controller.start();
-					return;
-				}
+				// if (intersects[i].object == button){
+				// 	BUTTON.spinWildly();
+				// 	controller.start();
+				// 	return;
+				// }
 				distortTitleBackground();
 				if (intersects[i].object == iron){
 					World.titleIconObjects["iron"].spinWildly();
@@ -806,6 +862,12 @@ function selectScene(e){ //select scene from title using raycasting
 					World.titleIconObjects["salt"].spinWildly();
 					setTimeout(function(){
 						World.changeScene('salt');
+					}, 1000);
+				}
+				else if (intersects[i].object == carbon){
+					World.titleIconObjects["carbon"].spinWildly();
+					setTimeout(function(){
+						World.changeScene('carbon');
 					}, 1000);
 				}
 				return;

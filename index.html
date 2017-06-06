@@ -3,70 +3,13 @@
 <head>
 	<title>Physical States</title>
 </head>
-<link rel="shortcut icon" href="assets/images/icon.png" type="image/x-icon" />
+
+<link rel="stylesheet" type="text/css" href="style.css">
+
 <style>
 	body{
 		overflow: hidden;
 		margin: 0;
-	}
-
-	#loading{
-		background-color: black;
-		height: 100vh;
-		width: 100vw;
-		z-index: 20000;
-	}
-
-	.container {
-	  width: 50px;
-	  height: 50px;
-	  position: relative;
-	  perspective: 1000px;
-	  top: 50%;
-	  left: 50%;
-	  transform: translate(-50%, -50%);
-	}
-
-	#cube {
-	  width: 100%;
-	  height: 100%;
-	  transform-style: preserve-3d;
-	  animation: rotate 3.5s infinite linear;
-	  margin-bottom: -50%;
-	}
-
-	#cube figure {
-	  margin: 0;
-	  width: 50px;
-	  height: 50px;
-	  display: block;
-	  position: absolute;
-	  background-color: white;
-	  opacity: .5;
-	}
-
-	#cube .front  { transform: rotateY(   0deg ) translateZ( 24px ); }
-	#cube .back   { transform: rotateX( 180deg ) translateZ( 24px ); }
-	#cube .right  { transform: rotateY(  90deg ) translateZ( 24px ); }
-	#cube .left   { transform: rotateY( -90deg ) translateZ( 24px ); }
-	#cube .top    { transform: rotateX(  90deg ) translateZ( 24px ); }
-	#cube .bottom { transform: rotateX( -90deg ) translateZ( 24px ); }
-
-	@keyframes rotate{
-		0%{transform: rotateY(0deg) rotateX(0deg);}
-		100%{transform: rotateY(359deg) rotateX(359deg);}
-	}
-
-	h1{
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		font-family: Helvetica;
-		font-weight: bold;
-		font-size: 1em;
-		text-align: center;
-		color: white;
 	}
 </style>
 <body>
@@ -83,7 +26,52 @@
 		</section>
 		 <h1>LOADING</h1>
 	</div>
-	<audio autoplay loop src="assets/sounds/rumbling.mp3"></audio>
+	<audio autoplay loop src="assets/sounds/rumbling.mp3" id="leafAudio"></audio>
+	<div class="controls">
+		<div class="credits__cl">
+			A <a href="http://uclacreatives.com" target="_blank">Creative Labs</a> Project
+		</div>
+		<svg id="controls__play" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve" width="20px" height="20px">
+			<g>
+				<g>
+					<path d="M8,0C3.5,0,0,3.5,0,8s3.5,8,8,8s8-3.5,8-8S12.5,0,8,0z M8,14c-3.5,0-6-2.5-6-6s2.5-6,6-6s6,2.5,6,6    S11.5,14,8,14z" fill="#FFFFFF"/>
+					<polygon points="6,12 11,8 6,4   " fill="#FFFFFF"/>
+				</g>
+			</g>
+		</svg>
+
+		<svg id="controls__sound" class="unmuted" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 513.32 513.32" style="enable-background:new 0 0 513.32 513.32;" xml:space="preserve" width="20px" height="20px">
+		<g>
+			<g>
+				<g>
+					<rect x="106.942" y="128.33" width="42.777" height="42.777" fill="#FFFFFF"/>
+					<rect x="192.495" y="278.048" width="42.777" height="42.777" fill="#FFFFFF"/>
+					<rect x="192.495" y="342.213" width="42.777" height="171.107" fill="#FFFFFF"/>
+					<rect x="106.942" y="192.495" width="42.777" height="320.825" fill="#FFFFFF"/>
+					<rect x="21.388" y="299.437" width="42.777" height="213.883" fill="#FFFFFF"/>
+					<rect x="21.388" y="235.272" width="42.777" height="42.777" fill="#FFFFFF"/>
+					<rect x="278.048" width="42.777" height="42.777" fill="#FFFFFF"/>
+					<rect x="278.048" y="64.165" width="42.777" height="449.155" fill="#FFFFFF"/>
+					<rect x="449.155" y="384.99" width="42.777" height="128.33" fill="#FFFFFF"/>
+					<rect x="449.155" y="320.825" width="42.777" height="42.777" fill="#FFFFFF"/>
+					<rect x="363.602" y="85.553" width="42.777" height="42.777" fill="#FFFFFF"/>
+					<rect x="363.602" y="149.718" width="42.777" height="363.602" fill="#FFFFFF"/>
+				</g>
+			</g>
+		</g>
+		</svg>
+	</div>
+
+	<div class="credits">
+		<div class="credits__poem">
+			<p>Poem: The Legion of Iron by Lola Ridge</p>
+			<!-- <p>Narrated by: <a href="https://soundcloud.com/mauler93/">mauler93</a></p> -->
+		</div>
+
+		<div class="credits__credits">
+			<a href="https://github.com/ninaling/physical-states/blob/master/README.md" target="_blank">Credits</a>
+		</div>
+	</div>
 </body>
 <script src="bower_components/threejs-build/build/three.js"></script>
 
@@ -144,8 +132,7 @@ void main()
 	}
 </script>
 
-<script src="bower_components/tween.js/src/Tween.js"></script>
-<!-- <script src="loading.js"></script> -->
+<!-- <script src="bower_components/tween.js/src/Tween.js"></script> -->
 <script src="classes.js"></script>
 <script src="script.js"></script>
 <script src="poemController.js"></script>
